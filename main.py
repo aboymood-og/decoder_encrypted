@@ -252,6 +252,9 @@ def decimalToBinary(num):
 def decimalToOctal(num): #return lista, we need to return int
     lst = []
 
+    if num == []:
+        return num
+
     finish = False
     while not finish:
         rest = num % 8
@@ -296,7 +299,7 @@ def toDecimal(num): #devuelve un int
         
 #aca mas de lo mismo pero para hex
 def decimalToHex(num):
-    print(num)
+    #print(num)
     lst = []
 
     finish = False
@@ -309,7 +312,8 @@ def decimalToHex(num):
 
             if rest > 9:
                 key = [k for k, v in HexDic2.items() if v == rest]
-                lst.append(key)
+                key_fin = listToString(key)
+                lst.append(key_fin)
             else:
                 lst.append(rest)
 
@@ -317,8 +321,6 @@ def decimalToHex(num):
                 finish = True
         
     lst.reverse()
-
-    #print("decimal to hex?", lst) 
 
     return lst
 
@@ -337,7 +339,13 @@ def decodeASCII(msj_og,base):
         aux = 1
 
     for i in range(len(msj_og)):
-        key = [k for k, v in Diccionario_ascii.items() if msj_og[i] == v[aux]]
+        #key = [k for k, v in Diccionario_ascii.items() if msj_og[i] == v[aux]]
+        key = None
+        for k, v in Diccionario_ascii.items():
+            if msj_og[i] == v[aux]:
+                key = k
+                break  # This forces the loop to stop searching immediately
+        
         msj_decode.append(key)
 
     msj_decode_ite = filter(None, msj_decode)
@@ -352,12 +360,13 @@ def decodeASCII(msj_og,base):
 
 #numero en lista separado tpo [[""],[""],[""]] to string como tal, unido, 1 solo
 def listToString(lista):
+    lst_fin = list(map(str, lista))
     if isinstance(lista, int):
         res = lista
     else:
         res = ""
-        for i in range(len(lista)):
-            res += lista[i][0]
+        for i in range(len(lst_fin)):
+            res += lst_fin[i][0]
 
     return res
 
@@ -400,32 +409,50 @@ archivo_trasnformado = listToBaseRquired(archivo_filtrado, base)
 
 #print("archivo_filtrado: ", archivo_filtrado)
 
-
+#print("Archivo_tranformado: ", archivo_trasnformado)
+lista_hex_code = []
 for i in range(len(archivo_trasnformado)):
     value = listToString(archivo_filtrado[i])
-    if value == "":
-        base_og = ""
-    elif value[0] == "*":
-        base_og = "Binario "
-    elif value[0] == "&":
-        base_og = "Octal "
-    elif value[0] == "#":
-        base_og = "Decimal "
-    elif value[0] == "!":
-        base_og = "Hexadecimal "
-    print(f"Valor {i}: {archivo_trasnformado[i]}\t(Original: {base_og}{value})")
+
+    if base == 16:
+        if value == "":
+            base_og = ""
+        elif value[0] == "*":
+            base_og = "Binario "
+        elif value[0] == "&":
+            base_og = "Octal "
+        elif value[0] == "#":
+            base_og = "Decimal "
+        elif value[0] == "!":
+            base_og = "Hexadecimal "
+        valor_trans = listToString(archivo_trasnformado[i])
+        lista_hex_code.append(valor_trans)
+        print(f"Valor {i}: {valor_trans}\t(Original: {base_og}{value})")
+
+    else:
+        if value == "":
+            base_og = ""
+        elif value[0] == "*":
+            base_og = "Binario "
+        elif value[0] == "&":
+            base_og = "Octal "
+        elif value[0] == "#":
+            base_og = "Decimal "
+        elif value[0] == "!":
+            base_og = "Hexadecimal "
+        print(f"Valor {i}: {archivo_trasnformado[i]}\t(Original: {base_og}{value})")
 
 print("--------------------------------------------------\n")
 
 print("MENSAJE DECODIFICADO: ")
-mensaje_codificado = decodeASCII(archivo_trasnformado, base)
+if base == 16:
+    mensaje_codificado = decodeASCII(lista_hex_code, base)
+else:
+    mensaje_codificado = decodeASCII(archivo_trasnformado, base)
 mensaje_codificado_final = listToString(mensaje_codificado)
 print(mensaje_codificado_final)
 
 
 print("\n[Proceso finalizado con éxito]")
 
-
-
-#ME FALTA AGREGAR CONVETIR HEX TO DECIMAL Y DECIMAL TO LO QUE SEA PERO EN HEX, QUE TIENE UN GRADO DE COMPLICACON EXTRA
 #ARREGLAR EL TEMA DE QUE AL IMPRIMIR LOS HEX SALEN SIN LA SLETRAS, SALE 1 VALOR DE LAS LETRAS, Y DEBE TRANSOFMRARLO A LETRA, POR EJ !6F, ES ! 6 15 E IMPRIME !61, ESO CORREGIR
