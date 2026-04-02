@@ -274,7 +274,10 @@ def decimalToOctal(num): #return lista, we need to return int
 def toDecimal(num): #devuelve un int
     if num == []:
         return []
-    elif num[0] == "*":
+    
+    num = num.copy()
+
+    if num[0] == "*":
         pot = 2
     elif num[0] == "&":
         pot = 8
