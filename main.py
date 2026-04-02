@@ -121,7 +121,7 @@ Diccionario_ascii = {
     "~": [126, "7E", 176, 1111110],
 }
 
-#Esta funcion lo que hace es leer el archivo caracter por caracter y lo ordena como una gran lista con listas internas las cuales, en principio y sin limpiar, cada sublista seria igual a un caracter ASCII
+#Esta funcion lo que hace es leer el archivo caracter por caracter y lo ordena como una gran lista con listas internas las cuales, en principio y sin limpiar, cada sublista seria igual a un caracter ASCII (CAPAZ DEBERIA HABER UN IF ALTIRO DE SI UN CARACTER NO ES VALIDO, NO LO AGREGUE DIRECTAMENTE?? NO ESPERAR A LIMPIAR)
 def archiveToList(texto):
     #Lectura de .txt caracter por caracter
     archivo = open(texto, mode="r")
@@ -210,32 +210,67 @@ def filtadoDeDatos(lista):
 def listToBaseRquired(lista_og, base_required):
     lista_transform = []
     for i in range(len(lista_og)):
+        num_dec = toDecimal(lista_og[i])
         if base_required == 2:
-            num = toBinary(lista_og[i])
+            num = decimalToBinary(num_dec)
         elif base_required == 8:
-            num = toOctal(lista_og[i])
+            num = decimalToOctal(num_dec)
         elif base_required == 10:
-            num = toDecimal(lista_og[i])
+            num = num_dec
         elif base_required == 16:
-            num = toHex(lista_og[i])
+            num = decimalToHex(num_dec)
         lista_transform.append(num)
+
+    #print("lista_transform", lista_transform)
     return lista_transform
-        
 
 #ex de num a recibir: num = ['!', '0', '1']
 
-#aca mas de lo mismo pero para octal
-def toBinary(num):
-    pass
+#aca mas de lo mismo pero para octal; example: num = 84; int
+def decimalToBinary(num):
+    lst = []
+
+    finish = False
+    while not finish:
+        if num == []:
+            return num
+        else:
+            rest = num % 2
+            num = num // 2
+            lst.append(rest)
+
+            if num == 0:
+                finish = True
+        
+    lst.reverse()
+
+    lst_fin = listToInt(lst)
+
+    return lst_fin
 
 #aca mas de lo mismo pero para octal
-def toOctal(num):
-    pass
+def decimalToOctal(num): #return lista, we need to return int
+    lst = []
+
+    finish = False
+    while not finish:
+        rest = num % 8
+        num = num // 8
+        lst.append(rest)
+
+        if num == 0:
+            finish = True
+    
+    lst.reverse()
+
+    lst_fin = listToInt(lst)
+
+    return lst_fin
 
 #En este def aplicare un polinomio caracteristico para pasar de cualquier base disponible a decimal en caso de ser necesario.
-def toDecimal(num):
+def toDecimal(num): #devuelve un int
     if num == []:
-        return None
+        return []
     elif num[0] == "*":
         pot = 2
     elif num[0] == "&":
@@ -255,11 +290,38 @@ def toDecimal(num):
         aux2 = aux * pot**(len(num)-2-i)
         num_transformed += aux2
 
+    #print("num_transformed", num_transformed)
+
     return num_transformed
         
 #aca mas de lo mismo pero para hex
-def toHex(num):
-    pass
+def decimalToHex(num):
+    print(num)
+    lst = []
+
+    finish = False
+    while not finish:
+        if num == []:
+            return num
+        else:
+            rest = num % 16
+            num = num // 16
+
+            if rest > 9:
+                key = [k for k, v in HexDic2.items() if v == rest]
+                lst.append(key)
+            else:
+                lst.append(rest)
+
+            if num == 0:
+                finish = True
+        
+    lst.reverse()
+
+    #print("decimal to hex?", lst) 
+
+    return lst
+
 
 #def para decodificar to ascii
 def decodeASCII(msj_og,base):
@@ -290,12 +352,24 @@ def decodeASCII(msj_og,base):
 
 #numero en lista separado tpo [[""],[""],[""]] to string como tal, unido, 1 solo
 def listToString(lista):
-    res = ""
-    for i in range(len(lista)):
-        res += lista[i][0]
+    if isinstance(lista, int):
+        res = lista
+    else:
+        res = ""
+        for i in range(len(lista)):
+            res += lista[i][0]
 
     return res
 
+#lista como [1, 0, 3] to int 103
+def listToInt(lista):
+    res = ""
+    for i in range(len(lista)):
+        res += str(lista[i])
+    
+    res_fin = int(res)
+
+    return res_fin
 
 
 
@@ -312,7 +386,9 @@ while not base_status:
         print("Porfavor, eliga una de las bases disponibles")
 
 
-archivo_procesado = archiveToList("notas_dm.txt")
+archivo_procesado = archiveToList("prueba_5.txt")
+
+#print("archivo_procesado", archivo_procesado)
 
 print("[!] Filtrando ruido místico (valores fuera de rango ASCII)...\n")
 
@@ -322,8 +398,11 @@ print(f"LISTA DE VALORES EXTRAÍDOS (Base {base}):\n----------------------------
 
 archivo_trasnformado = listToBaseRquired(archivo_filtrado, base)
 
+#print("archivo_filtrado: ", archivo_filtrado)
+
+
 for i in range(len(archivo_trasnformado)):
-    value = listToString(archivo_procesado[i])
+    value = listToString(archivo_filtrado[i])
     if value == "":
         base_og = ""
     elif value[0] == "*":
@@ -333,7 +412,7 @@ for i in range(len(archivo_trasnformado)):
     elif value[0] == "#":
         base_og = "Decimal "
     elif value[0] == "!":
-        base_og == "Hexadecimal "
+        base_og = "Hexadecimal "
     print(f"Valor {i}: {archivo_trasnformado[i]}\t(Original: {base_og}{value})")
 
 print("--------------------------------------------------\n")
@@ -345,3 +424,8 @@ print(mensaje_codificado_final)
 
 
 print("\n[Proceso finalizado con éxito]")
+
+
+
+#ME FALTA AGREGAR CONVETIR HEX TO DECIMAL Y DECIMAL TO LO QUE SEA PERO EN HEX, QUE TIENE UN GRADO DE COMPLICACON EXTRA
+#ARREGLAR EL TEMA DE QUE AL IMPRIMIR LOS HEX SALEN SIN LA SLETRAS, SALE 1 VALOR DE LAS LETRAS, Y DEBE TRANSOFMRARLO A LETRA, POR EJ !6F, ES ! 6 15 E IMPRIME !61, ESO CORREGIR
