@@ -20,6 +20,8 @@ HexDic2 = {
 
 Caracteres_Validos = ["*", "&", "#", "!", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "E", "F"]
 
+Sistemas_numericos = ["*", "&", "#", "!"]
+
 Diccionario_ascii = {
     #    dec   hex    oct    bin
     " ": [32,  "20",  40,  100000],
@@ -163,23 +165,41 @@ def archiveToList(texto):
     print(f"\n[+] Procesando archivo: {texto}")
     return list
 
-#En este def intentaré limpiar la basura, osea, si hay alguna sublista de la lista que tenga un caracter fuera de lo que deberia, fuera. Tomare como "basura" si un posible numero contiene algo fuera de su rango serpa automaticamente descartado de momento (ex: *012, descartado completo por tener un 2, fuera de su rango); quiza cambio esto en un futuro a que primero recorra todo el string y elimine el ruido antes de pasarlo a una superlista, dependiendo si de la forma anterior me dan los resultados esperados o no
+#limpieza de datoshkis jajjajaj
 def filtadoDeDatos(lista):
-    #Limpieza de "basura" en cada sublista
-    i = 0
-    aux = True
-    while aux:
-        for x in range(len(lista[i])):
-            if lista[i][x] not in Caracteres_Validos:
-                lista.pop(i)
-                x = 0
-                i -= 1 
-                break
+    #Eliminar caracteres que no sean validos
+    for i in range(len(lista)):
+        y2 = 0
+        for y in range(len(lista[i])):
+            if lista[i][y2] not in Caracteres_Validos:
+                lista[i].pop(y2)
             else:
-                x += 1
-        i += 1
-        if i >= len(lista):
-            aux = False
+                y2 += 1
+    
+    for i in range(len(lista)):
+        y2 = 0
+        for y in range(len(lista[i])):
+            if lista[i][y2] in Sistemas_numericos and lista[i][y2+1] in Sistemas_numericos:
+                lista[i].pop(y2)
+            else:
+                y2 += 1
+    #print("lista filtrada paso 1?", lista)
+       
+    #Limpieza de "basura" en cada sublista
+    #i = 0
+    #aux = True
+    #while aux:
+    #    for x in range(len(lista[i])):
+    #        if lista[i][x] not in Caracteres_Validos:
+    #            lista.pop(i)
+    #            x = 0
+    #            i -= 1 
+    #            break
+    #            else:
+    #            x += 1
+    #    i += 1
+    #    if i >= len(lista):
+    #        aux = False
         
     #Corroborar que cada sublista tenga los digitos correspondientes a su base
 
@@ -214,7 +234,9 @@ def toOctal(num):
 
 #En este def aplicare un polinomio caracteristico para pasar de cualquier base disponible a decimal en caso de ser necesario.
 def toDecimal(num):
-    if num[0] == "*":
+    if num == []:
+        return None
+    elif num[0] == "*":
         pot = 2
     elif num[0] == "&":
         pot = 8
@@ -224,7 +246,7 @@ def toDecimal(num):
         pot = 16
         for i in range(len(num)):
             if num[i] in HexDic2:
-                num[i] = HexDic2.get(num[i])
+                num[i] = str(HexDic2.get(num[i]))
                     
     num_transformed = 0
     for i in range(len(num)-1):
@@ -256,16 +278,23 @@ def decodeASCII(msj_og,base):
         key = [k for k, v in Diccionario_ascii.items() if msj_og[i] == v[aux]]
         msj_decode.append(key)
 
-    return msj_decode
+    msj_decode_ite = filter(None, msj_decode)
+    msj_decode_fin = list(msj_decode_ite)
+
+    return msj_decode_fin
 
 
 
     for i in range():
         pass
 
-#numero en lista separado tpo [["","",""]] to string como tal, unido, 1 solo
+#numero en lista separado tpo [[""],[""],[""]] to string como tal, unido, 1 solo
+def listToString(lista):
+    res = ""
+    for i in range(len(lista)):
+        res += lista[i][0]
 
-
+    return res
 
 
 
@@ -283,25 +312,36 @@ while not base_status:
         print("Porfavor, eliga una de las bases disponibles")
 
 
-archivo_procesado = archiveToList("prueba_1 copy (copy).txt")
+archivo_procesado = archiveToList("notas_dm.txt")
 
 print("[!] Filtrando ruido místico (valores fuera de rango ASCII)...\n")
 
 archivo_filtrado = filtadoDeDatos(archivo_procesado)
 
-print("archivo_filtrado", archivo_filtrado)
-
 print(f"LISTA DE VALORES EXTRAÍDOS (Base {base}):\n--------------------------------------------------")
 
 archivo_trasnformado = listToBaseRquired(archivo_filtrado, base)
-print(archivo_trasnformado)
-for i in range(len(archivo_trasnformado)):
-    print(f"Valor {i}: {archivo_trasnformado[i]}\t(Original: {archivo_procesado[i]})")
 
-print("--------------------------------------------------")
+for i in range(len(archivo_trasnformado)):
+    value = listToString(archivo_procesado[i])
+    if value == "":
+        base_og = ""
+    elif value[0] == "*":
+        base_og = "Binario "
+    elif value[0] == "&":
+        base_og = "Octal "
+    elif value[0] == "#":
+        base_og = "Decimal "
+    elif value[0] == "!":
+        base_og == "Hexadecimal "
+    print(f"Valor {i}: {archivo_trasnformado[i]}\t(Original: {base_og}{value})")
+
+print("--------------------------------------------------\n")
 
 print("MENSAJE DECODIFICADO: ")
 mensaje_codificado = decodeASCII(archivo_trasnformado, base)
-print(mensaje_codificado)
+mensaje_codificado_final = listToString(mensaje_codificado)
+print(mensaje_codificado_final)
+
 
 print("\n[Proceso finalizado con éxito]")
