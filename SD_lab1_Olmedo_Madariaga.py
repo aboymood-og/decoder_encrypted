@@ -74,18 +74,13 @@ def cleanFileToBaseRequired(clean_file, base_required):
     file_transformed = []
     for i in range (len(clean_file)):
         num_dec = toDecimal(clean_file[i])
-        if base_required == 2:
-            num = decimalToBinary(num_dec)
-        elif base_required == 8:
-            num = decimalToOctal(num_dec)
-        elif base_required == 16:
-            num = decimalToHex(num_dec)
-        else: 
+        if base_required == 10:
             num = num_dec
+        else:
+            num = decimalToBinOctHex(num_dec,base_required)
         file_transformed.append(num)
 
     return file_transformed
-
 
 def toDecimal(num):
     if num[0] == Binary_prefix:
@@ -110,17 +105,29 @@ def toDecimal(num):
     
     return num_decimal
 
-def decimalToBinary(num):
-    pass
+def decimalToBinOctHex(num, base_required):
+    character_transformed = []
 
-def decimalToOctal(num):
-    pass
-
-def decimalToHex(num):
-    pass
+    finish = False
+    while not finish:
+        rest = num % base_required
+        num = num // base_required
         
-    
+        if rest > 9:
+            key = [k for k, v in Hex_dic.items() if v == rest]
+            key = "".join(map(str, key))
+            character_transformed.append(key)
+        else:
+            character_transformed.append(rest)
 
+        if num == 0:
+            finish = True
+    character_transformed.reverse()
+
+    character_transformed = "".join(map(str, character_transformed))
+
+    return character_transformed
+    
 
 
 #main
@@ -143,3 +150,5 @@ print(f"LISTA DE VALORES EXTRAÍDOS (Base {base}):\n----------------------------
 
 #Leer el archivo limpio y tranformar cada valor a su base requerida ; return lista de string transformados: 
 transformed_file = cleanFileToBaseRequired(clean_file, base_required)
+
+print("transformed_file", transformed_file)
