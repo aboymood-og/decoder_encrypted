@@ -1,24 +1,22 @@
 #global variables
+Valid_characters = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "E", "F", "*", "&", "#", "!"] 
 
-Valid_characters = ["*", "&", "#", "!", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "E", "F"]
+Binary_prefix = Valid_characters[16]
+Binary_base = Valid_characters[0:1]
 
-Binary_prefix = "*"
-Binary_base = ["0","1"]
+Octal_prefix = Valid_characters[17]
+Octal_base = Valid_characters[0:7]
 
-Octal_prefix = "&"
-Octal_base = ["0","1","2","3","4","5","6","7"]
+Decimal_prefix = Valid_characters[18]
+Decimal_base = Valid_characters[0:9]
 
-Decimal_prefix = "#"
-Decimal_base = ["0","1","2","3","4","5","6","7","8","9"]
-
-Hex_prefix = "!"
-Hex_base = ["0","1","2","3","4","5","6","7","8","9","A","B","C","D","E","F"]
+Hex_prefix = Valid_characters[19]
+Hex_base = Valid_characters[0:15]
 
 Valid_prefix = [Binary_prefix, Octal_prefix, Decimal_prefix, Hex_prefix]
 
 
-
-def readFileAndIgnoreTrash(path_file): #RECORDATORIO; ACA VEO RECURSIVIDAD PERO NO RECUERDO COMO TRABAJAR CON ELLA AAJAJAJAJAJAJJJ, en un futuro vere si lo optimizo
+def readFileAndIgnoreTrash(path_file):
     
     print(f"\n[+] Procesando archivo: {path_file}")
 
