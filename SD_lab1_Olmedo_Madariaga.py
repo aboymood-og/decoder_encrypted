@@ -272,10 +272,23 @@ print(f"LISTA DE VALORES EXTRAÍDOS (Base {base_required}):\n-------------------
 #Leer el archivo limpio y tranformar cada valor a su base requerida ; return lista de string transformados: 
 transformed_file = cleanFileToBaseRequired(clean_file, base_required)
 
-#print lista, despuse lo haré
+#Imprimir tabla (aca hay un bug, pasa que debemos limpiar para usar solo valores entre 32 y 126 decimal en ASCII y aca imprime todos los valores, pq la "limpieza" la hace el programa cuando decodeamos, si esta fuera del diccionario lo ignora, pero eso no es lo que se pide, pero arreglar eso y estamos.)
+for i in range(len(clean_file)):
+    value = clean_file[i]
+    if value == "": 
+        base_og = ""
+    elif value[0] == "*":
+        base_og = "Binario "
+    elif value[0] == "&":
+        base_og = "Octal "
+    elif value[0] == "#":
+        base_og = "Decimal "
+    elif value[0] == "!":
+        base_og = "Hexadecimal "
+    print(f"Valor {i}: {transformed_file[i]}\t(Original: {base_og}{value})")
 
 #Imprimir por pantalla el mensaje decodificado
-print("MENSAJE DECODIFICADO: ")
+print("--------------------------------------------------\n\nMENSAJE DECODIFICADO: ")
 decode_msg = decodeASCII(transformed_file, base_required)
 print(decode_msg)
 
