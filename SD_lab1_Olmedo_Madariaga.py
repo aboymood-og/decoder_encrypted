@@ -123,6 +123,8 @@ Diccionario_ascii = {
 }
 
 def readFileAndIgnoreTrash(path_file):
+
+    #veo un problema aca, quiza, podria hacer 2 o 3 defs, 1 para el filtro 1, donde se elmine la basura del archivo ("Cualquier  car ́acter  que  no sea  un  prefijo" o un "Valid_characters"), 2 para el filtro 2 por rango ascii [32,126], y un tercero ya con el numero guardado, si por ejemplo es un binario y este incluye valores fuera de [0 y 1], lo elimine ej: 010101 -> valido; 010201 -> eliminar. Creo que este ultimo caso no ocurre pero podría ser util agregarlo.
     
     print(f"\n[+] Procesando archivo: {path_file}\n")
 
@@ -138,7 +140,7 @@ def readFileAndIgnoreTrash(path_file):
         file.seek(i)
         character_file = file.read(1)
 
-        #condicional para limpiar basura, si no es un caracter valido, lo ignora y pasa al siguiente
+        #filtro 1: condicional para limpiar basura, si no es un caracter valido, lo ignora y pasa al siguiente
         if character_file in Valid_characters:
             character_status = False
             x = i
@@ -155,9 +157,13 @@ def readFileAndIgnoreTrash(path_file):
                     character_status = True
                 else:
                     i += 1
+            print("caracter clean file: ", character_clean_file)
             delimiter = ""
             join_str = delimiter.join(character_clean_file)
-            clean_file.append(join_str)
+
+            #filtro 2: para que no analicemos datos fuera del rango ascii requerido.
+            if 32 <= toDecimal(join_str) <= 126:
+                clean_file.append(join_str)
 
         elif character_file == "":
             file_is_clean = True
@@ -180,7 +186,7 @@ def cleanFileToBaseRequired(clean_file, base_required):
 
     return file_transformed
 
-def toDecimal(num):
+def toDecimal(num): #recibe un str
     if num[0] == Binary_prefix:
         pot = 2
     elif num[0] == Octal_prefix:
@@ -264,15 +270,13 @@ while not base:
     else:
         print("Porfavor, eliga una de las bases disponibles")
 
-#Leer el archivo e ignorar basura ; return lista de strings: ['*1001110', '&1112', '!75', '#110', '&143', '*1100001']
 clean_file = readFileAndIgnoreTrash("prueba_1.txt") 
 
 print(f"LISTA DE VALORES EXTRAÍDOS (Base {base_required}):\n--------------------------------------------------")
 
-#Leer el archivo limpio y tranformar cada valor a su base requerida ; return lista de string transformados: 
 transformed_file = cleanFileToBaseRequired(clean_file, base_required)
 
-#Imprimir tabla (aca hay un bug, pasa que debemos limpiar para usar solo valores entre 32 y 126 decimal en ASCII y aca imprime todos los valores, pq la "limpieza" la hace el programa cuando decodeamos, si esta fuera del diccionario lo ignora, pero eso no es lo que se pide, pero arreglar eso y estamos.)
+#Imprimir tabla
 for i in range(len(clean_file)):
     value = clean_file[i]
     if value == "": 
