@@ -2,16 +2,16 @@
 Valid_characters = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "E", "F", "*", "&", "#", "!"] 
 
 Binary_prefix = Valid_characters[16]
-Binary_base = Valid_characters[0:1]
+Binary_base = Valid_characters[0:2]
 
 Octal_prefix = Valid_characters[17]
-Octal_base = Valid_characters[0:7]
+Octal_base = Valid_characters[0:8]
 
 Decimal_prefix = Valid_characters[18]
-Decimal_base = Valid_characters[0:9]
+Decimal_base = Valid_characters[0:10]
 
 Hex_prefix = Valid_characters[19]
-Hex_base = Valid_characters[0:15]
+Hex_base = Valid_characters[0:16]
 Hex_dic = {
     "A": 10,
     "B": 11,
@@ -122,59 +122,69 @@ Diccionario_ascii = {
     "~": [126, "7E", 176, 1111110],
 }
 
-def readFileAndIgnoreTrash(path_file):
-
-    #veo un problema aca, quiza, podria hacer 2 o 3 defs, 1 para el filtro 1, donde se elmine la basura del archivo ("Cualquier  car ́acter  que  no sea  un  prefijo" o un "Valid_characters"), 2 para el filtro 2 por rango ascii [32,126], y un tercero ya con el numero guardado, si por ejemplo es un binario y este incluye valores fuera de [0 y 1], lo elimine ej: 010101 -> valido; 010201 -> eliminar. Creo que este ultimo caso no ocurre pero podría ser util agregarlo.
-    
+def readFile(path_file): #return lista ; ex = ['!', '!', 'X', 'Y', 'z', '#', '8', '4', '-', '-', '-', 'a', 'b', 'c']
     print(f"\n[+] Procesando archivo: {path_file}\n")
-
     file = open(path_file, mode="r")
-
-    clean_file = []
-
-    file_is_clean = False
+    file_read = []
+    file_read_finish = False
     i = 0
-    while not file_is_clean:
-        character_clean_file = []
-
+    while not file_read_finish:
         file.seek(i)
-        character_file = file.read(1)
-
-        #filtro 1: condicional para limpiar basura, si no es un caracter valido, lo ignora y pasa al siguiente
-        if character_file in Valid_characters:
-            character_status = False
-            x = i
-            while not character_status:
-                file.seek(i)
-                character_file = file.read(1)
-                if character_file in Valid_characters:
-                    if character_file in Valid_prefix and x != i:
-                        character_status = True
-                    else:
-                        character_clean_file.append(character_file)
-                        i += 1
-                elif character_file == "":
-                    character_status = True
-                else:
-                    i += 1
-            print("caracter clean file: ", character_clean_file)
-            delimiter = ""
-            join_str = delimiter.join(character_clean_file)
-
-            #filtro 2: para que no analicemos datos fuera del rango ascii requerido.
-            if 32 <= toDecimal(join_str) <= 126:
-                clean_file.append(join_str)
-
-        elif character_file == "":
-            file_is_clean = True
-            
-        else:
-            i += 1                
+        character_file = file.read(1) 
+        if character_file == "":
+            file_read_finish = True
+        else:      
+            file_read.append(character_file) 
+        i += 1                
     file.close()
 
+    return file_read
+
+def extractValidCharacters(read_file):#FILTRO Ignorar Basura: Cualquier caracter que no sea un prefijo valido o un dıgito perteneciente a su base debe ser ignorado silenciosamente sin detener la ejecución.; return list of strings
+    filter1_file = []
+    current_char = []
+    current_prefix = None
+
+    for i in range(len(read_file)):
+        character = read_file[i]
+
+        if character in Valid_prefix:
+            if len(current_char) > 1:
+                delimiter = ""
+                join_str = delimiter.join(current_char)
+                filter1_file.append(join_str)
+            current_char = [character]
+            current_prefix = character
+            
+        elif current_prefix != None:
+            if current_prefix == Binary_prefix and character in Binary_base:
+                current_char.append(character)
+            elif current_prefix == Octal_prefix and character in Octal_base:
+                current_char.append(character)
+            elif current_prefix == Decimal_prefix and character in Decimal_base:
+                current_char.append(character)
+            elif current_prefix == Hex_prefix and character in Hex_base:
+                current_char.append(character)
+
+    if len(current_char) > 1:
+        delimiter = ""
+        join_str = delimiter.join(current_char)
+        filter1_file.append(join_str)
+
+    return filter1_file
+
+def filterAsciiValidRange(file_char_filt1):#FILTRO Solo se consideran valores validos aquellos cuyo equivalente decimal este entre el rango 32 y 126 (caracteres ASCII imprimibles).return list of strings
+    clean_file = []
+    
+    for i in range(len(file_char_filt1)):
+        char = file_char_filt1[i]
+        num_dec = toDecimal(char)        
+        if 32 <= num_dec <= 126:
+            clean_file.append(char)
+            
     return clean_file
 
-def cleanFileToBaseRequired(clean_file, base_required):
+def cleanFileToBaseRequired(clean_file, base_required): #CAPAZ SE PODRIA APROVECHAR QUE YA PASAMOS ALL A DECIMAL EN EL DEF ANTERIOR, GUARDARLO EN UNA LISTA Y RETURNEARLO APRA USARLO ACA Y ASI NO TENER 2 FOR QUE HACEN LO MISMO PERO QUIZA LO VEO DESPUES JAJA
     file_transformed = []
     for i in range (len(clean_file)):
         num_dec = toDecimal(clean_file[i])
@@ -203,7 +213,6 @@ def toDecimal(num): #recibe un str
     num_decimal = 0
     for i in range(len(num)-1):
         aux = int(num[i+1])
-        i *= 1
         aux2 = aux * pot**(len(num)-2-i)
         num_decimal += aux2 
     
@@ -270,7 +279,13 @@ while not base:
     else:
         print("Porfavor, eliga una de las bases disponibles")
 
-clean_file = readFileAndIgnoreTrash("prueba_1.txt") 
+read_file = readFile("prueba_1.txt")
+
+filter1_file = extractValidCharacters(read_file)
+
+print("[!] Filtrando ruido místico (valores fuera de rango ASCII)...\n")
+
+clean_file = filterAsciiValidRange(filter1_file)
 
 print(f"LISTA DE VALORES EXTRAÍDOS (Base {base_required}):\n--------------------------------------------------")
 
