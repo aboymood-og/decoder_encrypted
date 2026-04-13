@@ -22,36 +22,23 @@ HEX_DIC = {
     "E": 14,
     "F": 15
 }
+HEX_DIC_INV = {10: "A", 11: "B", 12: "C", 13: "D", 14: "E", 15: "F"}
 
 VALID_PREFIX = [BIN_PREFIX, OCT_PREFIX, DEC_PREFIX, HEX_PREFIX]
 
 #funciones_del_programa
-def read_file(path_file): #return lista ; ex = ['!', '!', 'X', 'Y', 'z', '#', '8', '4', '-', '-', '-', 'a', 'b', 'c']
+def read_file(path_file): 
     print(f"\n[+] Procesando archivo: {path_file}\n")
-    file = open(path_file, mode="r")
-    file_read = []
-    file_read_finish = False
-    i = 0
-    while not file_read_finish:
-        file.seek(i)
-        character_file = file.read(1) 
-        if character_file == "":
-            file_read_finish = True
-        else:      
-            file_read.append(character_file) 
-        i += 1                
-    file.close()
-
-    return file_read
+    
+    with open(path_file, mode="r") as file:
+        return file.read()
 
 def exctract_valid_char(read_file):#FILTRO Ignorar Basura: Cualquier caracter que no sea un prefijo valido o un dıgito perteneciente a su base debe ser ignorado silenciosamente sin detener la ejecución.; return list of strings
     filter1_file = []
     current_char = []
     current_prefix = None
 
-    for i in range(len(read_file)):
-        character = read_file[i]
-
+    for character in read_file:
         if character in VALID_PREFIX:
             if len(current_char) > 1:
                 delimiter = ""
@@ -132,9 +119,7 @@ def dec_to_bin_oct_hex(num, base_required):
         num = num // base_required
         
         if rest > 9:
-            key = [k for k, v in HEX_DIC.items() if v == rest]
-            key = "".join(map(str, key))
-            character_transformed.append(key)
+            character_transformed.append(HEX_DIC_INV[rest])
         else:
             character_transformed.append(rest)
 
