@@ -1,18 +1,18 @@
-#global variables
-Valid_characters = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "E", "F", "*", "&", "#", "!"] 
+#CONSTANTS
+VALID_CHAR = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "E", "F", "*", "&", "#", "!"] 
 
-Binary_prefix = Valid_characters[16]
-Binary_base = Valid_characters[0:2]
+BIN_PREFIX = VALID_CHAR[16]
+BIN_BASE = VALID_CHAR[0:2]
 
-Octal_prefix = Valid_characters[17]
-Octal_base = Valid_characters[0:8]
+OCT_PREFIX = VALID_CHAR[17]
+OCT_BASE = VALID_CHAR[0:8]
 
-Decimal_prefix = Valid_characters[18]
-Decimal_base = Valid_characters[0:10]
+DEC_PREFIX = VALID_CHAR[18]
+DEC_BASE = VALID_CHAR[0:10]
 
-Hex_prefix = Valid_characters[19]
-Hex_base = Valid_characters[0:16]
-Hex_dic = {
+HEX_PREFIX = VALID_CHAR[19]
+HEX_BASE = VALID_CHAR[0:16]
+HEX_DIC = {
     "A": 10,
     "B": 11,
     "C": 12,
@@ -21,9 +21,9 @@ Hex_dic = {
     "F": 15
 }
 
-Valid_prefix = [Binary_prefix, Octal_prefix, Decimal_prefix, Hex_prefix]
+VALID_PREFIX = [BIN_PREFIX, OCT_PREFIX, DEC_PREFIX, HEX_PREFIX]
 
-Diccionario_ascii = {
+DIC_ASCII = {
     #    dec   hex    oct    bin
     " ": [32,  "20",  40,  100000],
     "!": [33,  "21",  41,  100001],
@@ -122,7 +122,9 @@ Diccionario_ascii = {
     "~": [126, "7E", 176, 1111110],
 }
 
-def readFile(path_file): #return lista ; ex = ['!', '!', 'X', 'Y', 'z', '#', '8', '4', '-', '-', '-', 'a', 'b', 'c']
+
+#funciones_del_programa
+def read_file(path_file): #return lista ; ex = ['!', '!', 'X', 'Y', 'z', '#', '8', '4', '-', '-', '-', 'a', 'b', 'c']
     print(f"\n[+] Procesando archivo: {path_file}\n")
     file = open(path_file, mode="r")
     file_read = []
@@ -140,7 +142,7 @@ def readFile(path_file): #return lista ; ex = ['!', '!', 'X', 'Y', 'z', '#', '8'
 
     return file_read
 
-def extractValidCharacters(read_file):#FILTRO Ignorar Basura: Cualquier caracter que no sea un prefijo valido o un dıgito perteneciente a su base debe ser ignorado silenciosamente sin detener la ejecución.; return list of strings
+def exctract_valid_char(read_file):#FILTRO Ignorar Basura: Cualquier caracter que no sea un prefijo valido o un dıgito perteneciente a su base debe ser ignorado silenciosamente sin detener la ejecución.; return list of strings
     filter1_file = []
     current_char = []
     current_prefix = None
@@ -148,7 +150,7 @@ def extractValidCharacters(read_file):#FILTRO Ignorar Basura: Cualquier caracter
     for i in range(len(read_file)):
         character = read_file[i]
 
-        if character in Valid_prefix:
+        if character in VALID_PREFIX:
             if len(current_char) > 1:
                 delimiter = ""
                 join_str = delimiter.join(current_char)
@@ -157,13 +159,13 @@ def extractValidCharacters(read_file):#FILTRO Ignorar Basura: Cualquier caracter
             current_prefix = character
             
         elif current_prefix != None:
-            if current_prefix == Binary_prefix and character in Binary_base:
+            if current_prefix == BIN_PREFIX and character in BIN_BASE:
                 current_char.append(character)
-            elif current_prefix == Octal_prefix and character in Octal_base:
+            elif current_prefix == OCT_PREFIX and character in OCT_BASE:
                 current_char.append(character)
-            elif current_prefix == Decimal_prefix and character in Decimal_base:
+            elif current_prefix == DEC_PREFIX and character in DEC_BASE:
                 current_char.append(character)
-            elif current_prefix == Hex_prefix and character in Hex_base:
+            elif current_prefix == HEX_PREFIX and character in HEX_BASE:
                 current_char.append(character)
 
     if len(current_char) > 1:
@@ -173,42 +175,42 @@ def extractValidCharacters(read_file):#FILTRO Ignorar Basura: Cualquier caracter
 
     return filter1_file
 
-def filterAsciiValidRange(file_char_filt1):#FILTRO Solo se consideran valores validos aquellos cuyo equivalente decimal este entre el rango 32 y 126 (caracteres ASCII imprimibles).return list of strings
+def filter_ascii_valid_range(file_char_filt1):#FILTRO Solo se consideran valores validos aquellos cuyo equivalente decimal este entre el rango 32 y 126 (caracteres ASCII imprimibles).return list of strings
     clean_file = []
     
     for i in range(len(file_char_filt1)):
         char = file_char_filt1[i]
-        num_dec = toDecimal(char)        
+        num_dec = to_decimal(char)        
         if 32 <= num_dec <= 126:
             clean_file.append(char)
             
     return clean_file
 
-def cleanFileToBaseRequired(clean_file, base_required): #CAPAZ SE PODRIA APROVECHAR QUE YA PASAMOS ALL A DECIMAL EN EL DEF ANTERIOR, GUARDARLO EN UNA LISTA Y RETURNEARLO APRA USARLO ACA Y ASI NO TENER 2 FOR QUE HACEN LO MISMO PERO QUIZA LO VEO DESPUES JAJA
+def clean_file_to_base_required(clean_file, base_required): #CAPAZ SE PODRIA APROVECHAR QUE YA PASAMOS ALL A DECIMAL EN EL DEF ANTERIOR, GUARDARLO EN UNA LISTA Y RETURNEARLO APRA USARLO ACA Y ASI NO TENER 2 FOR QUE HACEN LO MISMO PERO QUIZA LO VEO DESPUES JAJA
     file_transformed = []
     for i in range (len(clean_file)):
-        num_dec = toDecimal(clean_file[i])
+        num_dec = to_decimal(clean_file[i])
         if base_required == 10:
             num = num_dec
         else:
-            num = decimalToBinOctHex(num_dec,base_required)
+            num = dec_to_bin_oct_hex(num_dec,base_required)
         file_transformed.append(num)
 
     return file_transformed
 
-def toDecimal(num): #recibe un str
-    if num[0] == Binary_prefix:
+def to_decimal(num): #recibe un str
+    if num[0] == BIN_PREFIX:
         pot = 2
-    elif num[0] == Octal_prefix:
+    elif num[0] == OCT_PREFIX:
         pot = 8
-    elif num[0] == Decimal_prefix:
+    elif num[0] == DEC_PREFIX:
         pot = 10
-    elif num[0] == Hex_prefix:
+    elif num[0] == HEX_PREFIX:
         pot = 16
         num = list(num)
         for i in range(len(num)):
-            if num[i] in Hex_dic:
-                num[i] = str(Hex_dic.get(num[i]))
+            if num[i] in HEX_DIC:
+                num[i] = str(HEX_DIC.get(num[i]))
         
     num_decimal = 0
     for i in range(len(num)-1):
@@ -218,7 +220,7 @@ def toDecimal(num): #recibe un str
     
     return num_decimal
 
-def decimalToBinOctHex(num, base_required):
+def dec_to_bin_oct_hex(num, base_required):
     character_transformed = []
 
     finish = False
@@ -227,7 +229,7 @@ def decimalToBinOctHex(num, base_required):
         num = num // base_required
         
         if rest > 9:
-            key = [k for k, v in Hex_dic.items() if v == rest]
+            key = [k for k, v in HEX_DIC.items() if v == rest]
             key = "".join(map(str, key))
             character_transformed.append(key)
         else:
@@ -243,7 +245,7 @@ def decimalToBinOctHex(num, base_required):
         character_transformed = int(character_transformed)
         return character_transformed
     
-def decodeASCII(encode_file, base):
+def decode_ascii(encode_file, base):
     decode_msg = ""
 
     if base == 2:
@@ -257,7 +259,7 @@ def decodeASCII(encode_file, base):
 
     for i in range(len(encode_file)):
         key = None
-        for k, v in Diccionario_ascii.items():
+        for k, v in DIC_ASCII.items():
             if encode_file[i] == v[aux]:
                 key = k
                 break
@@ -266,49 +268,53 @@ def decodeASCII(encode_file, base):
     
     return decode_msg
 
-#main
-print("--- DECODIFICADOR DE MENSAJES ---\n")
+def main():
+    print("--- DECODIFICADOR DE MENSAJES ---\n")
 
-#Elegir por teclado la base a la que se quiere transformar el mensaje encripado
-base = False
-while not base:
-    base_required = input("Ingrese la base en la que desea visualizar los datos (2, 8, 10, 16):")
-    if base_required in ("2", "8", "10", "16"):    
-        base = True
-        base_required = int(base_required)
-    else:
-        print("Porfavor, eliga una de las bases disponibles")
+    #Elegir por teclado la base a la que se quiere transformar el mensaje encripado
+    base = False
+    while not base:
+        base_required = input("Ingrese la base en la que desea visualizar los datos (2, 8, 10, 16):")
+        if base_required in ("2", "8", "10", "16"):    
+            base = True
+            base_required = int(base_required)
+        else:
+            print("Porfavor, eliga una de las bases disponibles")
 
-read_file = readFile("prueba_1.txt")
+    file_read = read_file("prueba_1.txt")
 
-filter1_file = extractValidCharacters(read_file)
+    filter1_file = exctract_valid_char(file_read)
 
-print("[!] Filtrando ruido místico (valores fuera de rango ASCII)...\n")
+    print("[!] Filtrando ruido místico (valores fuera de rango ASCII)...\n")
 
-clean_file = filterAsciiValidRange(filter1_file)
+    clean_file = filter_ascii_valid_range(filter1_file)
 
-print(f"LISTA DE VALORES EXTRAÍDOS (Base {base_required}):\n--------------------------------------------------")
+    print(f"LISTA DE VALORES EXTRAÍDOS (Base {base_required}):\n--------------------------------------------------")
 
-transformed_file = cleanFileToBaseRequired(clean_file, base_required)
+    transformed_file = clean_file_to_base_required(clean_file, base_required)
 
-#Imprimir tabla
-for i in range(len(clean_file)):
-    value = clean_file[i]
-    if value == "": 
-        base_og = ""
-    elif value[0] == "*":
-        base_og = "Binario "
-    elif value[0] == "&":
-        base_og = "Octal "
-    elif value[0] == "#":
-        base_og = "Decimal "
-    elif value[0] == "!":
-        base_og = "Hexadecimal "
-    print(f"Valor {i}: {transformed_file[i]}\t(Original: {base_og}{value})")
+    #Imprimir tabla
+    for i in range(len(clean_file)):
+        value = clean_file[i]
+        if value == "": 
+            base_og = ""
+        elif value[0] == "*":
+            base_og = "Binario "
+        elif value[0] == "&":
+            base_og = "Octal "
+        elif value[0] == "#":
+            base_og = "Decimal "
+        elif value[0] == "!":
+            base_og = "Hexadecimal "
+        print(f"Valor {i}: {transformed_file[i]}\t(Original: {base_og}{value})")
 
-#Imprimir por pantalla el mensaje decodificado
-print("--------------------------------------------------\n\nMENSAJE DECODIFICADO: ")
-decode_msg = decodeASCII(transformed_file, base_required)
-print(decode_msg)
+    #Imprimir por pantalla el mensaje decodificado
+    print("--------------------------------------------------\n\nMENSAJE DECODIFICADO: ")
+    decode_msg = decode_ascii(transformed_file, base_required)
+    print(decode_msg)
 
-print("\n[Proceso finalizado con éxito]")
+    print("\n[Proceso finalizado con éxito]")
+
+#ejectuar main()
+if __name__ == "__main__":
+    main()
