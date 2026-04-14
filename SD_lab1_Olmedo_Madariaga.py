@@ -30,8 +30,17 @@ VALID_PREFIX = [BIN_PREFIX, OCT_PREFIX, DEC_PREFIX, HEX_PREFIX]
 def read_file(path_file): 
     print(f"\n[+] Procesando archivo: {path_file}\n")
     
-    with open(path_file, mode="r") as file:
-        return file.read()
+    try:
+        with open(path_file, mode="r") as file:
+            return file.read()
+            
+    except FileNotFoundError:
+        print(f"[!] No se pudo encontrar el archivo {path_file}.\n Asegúrate de que el archivo esté en el mismo directorio que el script.")
+        return None
+    
+    except Exception as e:
+        print(f"[!] Ocurrió un error inesperado al leer el archivo: {e}")
+        return None
 
 def exctract_valid_char(read_file):#FILTRO Ignorar Basura: Cualquier caracter que no sea un prefijo valido o un dıgito perteneciente a su base debe ser ignorado silenciosamente sin detener la ejecución.; return list of strings
     filter1_file = []
@@ -144,6 +153,8 @@ def decode_ascii(clean_file):
 def main():
     print("--- DECODIFICADOR DE MENSAJES ---\n")
 
+    text_to_process = "notas_dm1.txt"
+
     #Elegir por teclado la base a la que se quiere transformar el mensaje encripado
     base = False
     while not base:
@@ -154,7 +165,11 @@ def main():
         else:
             print("Porfavor, eliga una de las bases disponibles")
 
-    file_read = read_file("prueba_1.txt")
+    file_read = read_file(text_to_process)
+
+    if file_read is None:
+        print("\n[Proceso terminado por error del archivo a procesar]")
+        return
 
     filter1_file = exctract_valid_char(file_read)
 
