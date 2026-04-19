@@ -63,8 +63,8 @@ def exctract_valid_char(read_file):#FILTRO Ignorar Basura: Cualquier caracter qu
                 current_char.append(character)
             elif current_prefix == DEC_PREFIX and character in DEC_BASE:
                 current_char.append(character)
-            elif current_prefix == HEX_PREFIX and character in HEX_BASE:
-                current_char.append(character)
+            elif current_prefix == HEX_PREFIX and character.upper() in HEX_BASE:
+                current_char.append(character.upper())
 
     if len(current_char) > 1:
         delimiter = ""
@@ -97,7 +97,7 @@ def clean_file_to_base_required(clean_file, base_required):
 
     return file_transformed
 
-def to_decimal(num): #recibe un str
+def to_decimal(num): 
     if num[0] == BIN_PREFIX:
         pot = 2
     elif num[0] == OCT_PREFIX:
@@ -153,7 +153,7 @@ def decode_ascii(clean_file):
 def main():
     print("--- DECODIFICADOR DE MENSAJES ---\n")
 
-    text_to_process = "notas_dm1.txt"
+    text_to_process = "notas_dm.txt"
 
     #Elegir por teclado la base a la que se quiere transformar el mensaje encripado
     base = False
