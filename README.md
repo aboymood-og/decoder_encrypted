@@ -4,7 +4,20 @@
 * **Nombre:** Alonso Olmedo - **RUT:** 21.771.481-8
 * **Nombre:** Felipe Madariaga - **RUT:** 21.360.588-7
 
-## 2. Especificación de los Algoritmos y Desarrollo Realizado
+## 2. Instrucciones de Ejecución y Configuración
+Para garantizar la correcta ejecución del decodificador, se deben seguir estas indicaciones:
+
+1. **Ubicación del Archivo:** El script de Python asume por defecto que el archivo de texto a procesar se llama `notas_dm.txt` y que se encuentra alojado exactamente en el mismo directorio desde donde se ejecuta el script.
+2. **Modificación del Archivo de Entrada:** Si se desea probar el algoritmo con un archivo de pruebas distinto, no es necesario reescribir la lógica de lectura. Basta con abrir el código fuente, dirigirse a la función `main()` y modificar el valor de la variable `text_to_process` con el nombre del nuevo archivo (incluyendo su extensión `.txt`).
+   ```python
+   def main():
+    print("--- DECODIFICADOR DE MENSAJES ---\n")
+
+    text_to_process = "prueba_x.txt"
+   ```
+3. **Ejecución:** Al correr el script en la terminal, el programa solicitará a través de la consola la base numérica en la que el usuario desea visualizar la transformación (2, 8, 10 o 16).
+
+## 3. Especificación de los Algoritmos y Desarrollo Realizado
 El decodificador fue desarrollado en Python 3.x utilizando un enfoque modular para separar la lógica de extracción, filtrado y conversión. El flujo del programa se divide en las siguientes etapas principales:
 
 * **Lectura Segura (`read_file`):** Maneja la lectura del archivo de texto (Ejemplo: `notas_dm.txt`) incorporando bloques `try-except` para evitar interrupciones abruptas si el archivo no se encuentra en el directorio de ejecución.
@@ -16,14 +29,17 @@ El decodificador fue desarrollado en Python 3.x utilizando un enfoque modular pa
   * **Desde Decimal a Binario u Octal o Hexadecimal(`dec_to_bin_oct_hex`):** Implementa el método de divisiones sucesivas. Se divide el número decimal por la base de destino iterativamente, almacenando los restos (mapeados a caracteres hexadecimales si es necesario) hasta que el cociente es cero.
 * **Decodificación (`decode_ascii`):** Transforma el arreglo de valores decimales limpios a su representación en caracteres utilizando el estándar ASCII.
 
-## 3. Supuestos Utilizados
+## 4. Supuestos Utilizados
 Durante el desarrollo de esta solución se asumieron las siguientes consideraciones:
 
 1. **Uso de funciones (int y chr):** De acuerdo con las aclaraciones entregadas por el ayudante del curso a través de Discord (9 de abril de 2026), se asume como válido el uso de la función `int(x)` estrictamente para la conversión de un string a tipo de dato entero, así como el uso de `chr()` para la conversión final a ASCII. Se respeta rigurosamente la prohibición de usar `int(x, base)` u otras funciones de conversión automática.
 2. **Definición de "Ruido Místico" (Transparencia Estricta):** Se asume que los caracteres inválidos (ruido) incrustados dentro de una secuencia numérica son estrictamente transparentes. El programa no asume que el ruido actúa como delimitador de cierre. Por ejemplo, si el flujo presenta un prefijo decimal seguido de dígitos interrumpidos por una letra ajena a la base (ejemplo: `#84a1`), el algoritmo ignorará silenciosamente el carácter inválido (`a`) y continuará concatenando los dígitos válidos (`8`, `4`, `1`), procesando el valor final como `841` en base decimal. El cierre y evaluación de un valor numérico se produce única y exclusivamente cuando el sistema detecta un nuevo prefijo válido (`*`, `&`, `#`, `!`) o cuando se alcanza el final del archivo (EOF).
 3. **Flexibilidad del Formato Hexadecimal (Case-Insensitive):** Se asume que el archivo de texto a procesar puede contener caracteres hexadecimales escritos mezclando mayúsculas y minúsculas. El sistema asume que la capitalización no define la validez del carácter. Por ejemplo, se considera que un bloque como `!6f` debe ser tratado exactamente igual que `!6F` (resultando en el valor decimal `111`, correspondiente a la letra `o` en ASCII). Si el programa fuera estrictamente sensible a mayúsculas, la letra `f` minúscula habría sido tratada como "ruido místico" e ignorada, dejando un valor aislado de `6` (hexadecimal), el cual habría sido posteriormente descartado por el filtro ASCII al estar fuera del rango imprimible.
+4. **Continuidad de Datos (Ausencia de Delimitadores):** Se asume que el archivo de entrada es un flujo continuo de texto. El algoritmo no requiere espacios, tabulaciones ni saltos de línea para separar los bloques de datos, ya que el cambio de bloque está dictado exclusivamente por la aparición de un nuevo prefijo. (Cualquier espacio o salto de línea presente en el archivo es tratado dinámicamente como "ruido" y descartado).
+5. **Naturaleza del Mensaje (Rango ASCII):** Se asume que el "mensaje oculto" a decodificar está compuesto exclusivamente por caracteres imprimibles legibles. Por ende, cualquier valor numérico válido en su base, pero que resulte en un decimal fuera del rango estándar (32 a 126), es considerado ruido intencional del sistema de encriptación y no formará parte del mensaje final.
+6. **Prefijos de Inicialización Obligatorios:** Se asume que no existe un "estado o base por defecto" al iniciar la lectura del archivo. Cualquier carácter válido (como un número o letra) que aparezca en el flujo de texto antes de que el sistema lea el primer prefijo identificador (`*`, `&`, `#`, `!`) será ignorado por completo, ya que el programa requiere una declaración explícita de base para comenzar a capturar datos.
 
-## 4. Ejemplo de Ejecución y Filtrado
+## 5. Ejemplo de Ejecución y Filtrado
 
 Para ilustrar el comportamiento de los algoritmos de extracción y filtrado (específicamente la transparencia del ruido, la validación ASCII y la flexibilidad de mayúsculas/minúsculas), supongamos que tenemos un archivo `ejemplo.txt` que contiene la siguiente cadena de texto:
 
@@ -64,3 +80,4 @@ Para ilustrar el comportamiento de los algoritmos de extracción y filtrado (esp
 **Mensaje Decodificado Final:**
 ```text
 Hola
+```

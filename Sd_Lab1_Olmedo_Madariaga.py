@@ -1,4 +1,4 @@
-#Link a mi GitHub con el progreso del lab: https://github.com/aboymood-og/decoder_encrypted
+#Link a nuestro GitHub con el progreso del lab: https://github.com/aboymood-og/decoder_encrypted
 
 #CONSTANTS
 VALID_CHAR = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "E", "F", "*", "&", "#", "!"] 
