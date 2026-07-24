@@ -1,8 +1,8 @@
 # Laboratorio 1: Decodificador de Notas - Sistemas Digitales UFT
 
 ## 1. Integrantes
-* **Nombre:** Alonso Olmedo - **RUT:** 21.771.481-8
-* **Nombre:** Felipe Madariaga - **RUT:** 21.360.588-7
+* **Nombre:** Alonso O****
+* **Nombre:** Felipe M****
 
 ## 2. Instrucciones de Ejecución y Configuración
 Para garantizar la correcta ejecución del decodificador, se deben seguir estas indicaciones:
